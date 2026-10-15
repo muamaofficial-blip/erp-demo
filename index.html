@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>플르부아 ERP 데모</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{color-scheme:light}
+html,body{background:#FFFFFF;color:#111111}
+
+body{margin:0;background:#FFFFFF;color:#111111;font-family:"Pretendard","Noto Sans KR",system-ui,-apple-system,sans-serif}
+a{color:#111111}a:hover{color:#555555}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:#3A3A3A;font:inherit;font-size:14px;text-align:left;cursor:pointer}
+.nav:hover{background:#F2F2F2}
+.nav.on{background:#111111;color:#FFFFFF;font-weight:500}
+.cnt{font-size:11px;padding:2px 7px;border-radius:999px;background:#EDEDED;color:#3A3A3A}
+.nav.on .cnt{background:#3A3A3A;color:#FFFFFF}
+.card{border:1px solid #E3E3E3;border-radius:12px;padding:18px 20px;background:#FFFFFF;min-width:0}
+.lab{font-size:12px;color:#595959;letter-spacing:.02em}
+.big{font-size:24px;font-weight:700;margin-top:10px;letter-spacing:-.01em}
+.sub{font-size:12px;color:#595959;margin-top:6px;line-height:1.55}
+.h2{font-size:15px;font-weight:700;margin:0 0 4px}
+.h2s{font-size:12px;color:#595959;margin:0 0 14px}
+.tbox{overflow-x:auto;border:1px solid #E3E3E3;border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-weight:500;color:#595959;background:#FAFAFA;padding:10px 14px;border-bottom:1px solid #E3E3E3;white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid #F0F0F0;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.b{font-weight:700}
+.mute{color:#8A8A8A}
+.neg{font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.tag{display:inline-block;font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid #CFCFCF;color:#3A3A3A;white-space:nowrap}
+.tag.dark{background:#111111;border-color:#111111;color:#FFFFFF}
+.ph{color:#6B6B6B;background:#F2F2F2;border-radius:6px;padding:2px 8px;font-size:12px;white-space:nowrap}
+.alert{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid #F0F0F0}
+.alert:last-child{border-bottom:0}
+.dot{flex:0 0 8px;height:8px;border-radius:999px;background:#111111;margin-top:6px}
+.dot.lo{background:#BDBDBD}
+.bars{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:8px;border-bottom:1px solid #E3E3E3}
+.bar{flex:1 1 0;min-width:0;background:#D9D9D9;border-radius:3px 3px 0 0}
+.bar.on{background:#111111}
+.xl{display:flex;gap:4px;margin-top:6px}
+.xl span{flex:1 1 0;min-width:0;text-align:center;font-size:10px;color:#8A8A8A;overflow:hidden}
+.hb{height:10px;background:#111111;border-radius:3px}
+.hbt{height:10px;background:#EDEDED;border-radius:3px;flex:1 1 auto;display:flex}
+.seg{height:22px}
+.wf{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #F0F0F0;font-size:13px}
+.wf:last-child{border-bottom:0}
+.range{width:100%;accent-color:#111111;height:28px}
+.lgd{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#595959;margin-right:14px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px}
+
+#app>div{padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
+.range{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid #111111;outline-offset:2px}
+@media (max-width:640px){main{padding:20px 16px 48px!important}aside{max-width:none!important;border-right:0!important;border-bottom:1px solid #EDEDED}}
+</style>
+</head>
+<body style="margin:0">
+<div id="app"></div>
+<template id="tpl">
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh; background: #FFFFFF">
+  <aside style="flex: 1 1 200px; max-width: 240px; box-sizing: border-box; padding: 24px 14px; border-right: 1px solid #EDEDED; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 0 8px 20px">
+      <div style="width: 34px; height: 34px; border-radius: 8px; background: #111111; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">P</div>
+      <div>
+        <div style="font-size: 14px; font-weight: 700">Pleuvoir</div>
+        <div style="font-size: 11px; color: #595959">통합 대시보드 · ERP</div>
+      </div>
+    </div>
+    <div class="lab" style="padding: 6px 12px 4px">대시보드</div>
+    <template data-for="navA" data-as="n">
+      <button class="{{n.cls}}" data-on-click="{{n.go}}"><span>{{n.label}}</span><template data-if="n.hasCnt"><span class="cnt">{{n.cnt}}</span></template></button>
+    </template>
+    <div class="lab" style="padding: 16px 12px 4px">ERP</div>
+    <template data-for="navB" data-as="n">
+      <button class="{{n.cls}}" data-on-click="{{n.go}}"><span>{{n.label}}</span><template data-if="n.hasCnt"><span class="cnt">{{n.cnt}}</span></template></button>
+    </template>
+    <div style="margin-top: auto; padding: 20px 12px 0; font-size: 11px; color: #595959; line-height: 1.6">데모 화면<br>실데이터: 카페24 주문 10/3–10/5 · 원가표 · 메타 광고 관리자(9/1–10/5)<br>예시: 재고 수량 · 발주 · 회색 [연동 후] 칸</div>
+  </aside>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 36px 64px">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid #EDEDED; margin-bottom: 24px">
+      <div>
+        <div class="lab">{{crumb}}</div>
+        <h1 style="margin: 6px 0 0; font-size: 26px; font-weight: 700; letter-spacing: -.01em">{{title}}</h1>
+        <div class="sub">{{desc}}</div>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <span class="tag">기준 2026.10.04 (토)</span>
+        <span class="tag">부가세 별도</span>
+        <span class="tag dark">데모</span>
+      </div>
+    </div>
+
+    <template data-if="isHome">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+          <template data-for="homeKpi" data-as="k">
+            <div class="card"><div class="lab">{{k.l}}</div><div class="big">{{k.v}}</div><div class="sub">{{k.s}}</div></div>
+          </template>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px">
+          <div class="card">
+            <p class="h2">메타 일별 구매 · 9/1 – 9/25</p>
+            <p class="h2s">9/17 시크릿 세트 도입 후 일 구매 4.5건 → 29.6건 · 구매당 비용 ₩36,553 → ₩6,331</p>
+            <div class="bars"><template data-for="metaDays" data-as="d"><div class="{{d.cls}}" style="height: {{d.h}}" title="{{d.tip}}"></div></template></div>
+            <div class="xl"><template data-for="metaDays" data-as="d"><span>{{d.x}}</span></template></div>
+            <div style="margin-top: 12px"><span class="lgd"><span class="sw" style="background: #D9D9D9"></span>상시 운영</span><span class="lgd"><span class="sw" style="background: #111111"></span>시크릿 세트 도입 후</span></div>
+          </div>
+          <div class="card">
+            <p class="h2">알림</p>
+            <p class="h2s">조건을 넘으면 자동으로 뜨는 항목</p>
+            <template data-for="alerts" data-as="a">
+              <div class="alert"><span class="{{a.dot}}"></span><div style="min-width: 0"><div style="font-size: 14px; font-weight: 500">{{a.t}}</div><div class="sub">{{a.d}}</div></div></div>
+            </template>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px">
+          <div class="card">
+            <p class="h2">채널별 매출 · 10/4</p>
+            <p class="h2s">쿠팡 · 올리브영 연동 시 자동 집계</p>
+            <template data-for="channels" data-as="c">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px"><span>{{c.n}}</span><span class="{{c.cls}}">{{c.v}}</span></div>
+            </template>
+          </div>
+          <div class="card">
+            <p class="h2">주문 구성 · 기간별</p>
+            <p class="h2s">미끼만 산 주문이 줄고 본품 · 일반 동반 주문이 늘었는지</p>
+            <template data-for="mix" data-as="m">
+              <div style="padding: 8px 0">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; color: #3A3A3A; margin-bottom: 6px"><span>{{m.p}}</span><span>{{m.n}}</span></div>
+                <div style="display: flex; border-radius: 4px; overflow: hidden"><div class="seg" style="width: {{m.w1}}; background: #111111"></div><div class="seg" style="width: {{m.w2}}; background: #6B6B6B"></div><div class="seg" style="width: {{m.w3}}; background: #BDBDBD"></div></div>
+              </div>
+            </template>
+            <div style="margin-top: 10px"><span class="lgd"><span class="sw" style="background: #111111"></span>미끼만</span><span class="lgd"><span class="sw" style="background: #6B6B6B"></span>미끼 + 시크릿 본품</span><span class="lgd"><span class="sw" style="background: #BDBDBD"></span>시크릿 본품 · 일반 포함</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="h2">최근 3일 · 자사몰</p>
+          <p class="h2s">공헌이익 = 매출(부가세 제외) − 원가 − PG 3.5% − 택배 · 포장 3,500원/주문</p>
+          <div class="tbox"><table>
+            <thead><tr><th>날짜</th><th class="num">주문</th><th class="num">매출(실결제)</th><th class="num">객단가</th><th class="num">공헌이익 · 광고 전</th><th class="num">주문당</th><th class="num">광고비</th><th>비고</th></tr></thead>
+            <tbody><template data-for="days" data-as="r"><tr><td class="b">{{r.d}}</td><td class="num">{{r.o}}</td><td class="num">{{r.s}}</td><td class="num">{{r.a}}</td><td class="num">{{r.c}}</td><td class="num b">{{r.p}}</td><td class="num"><span class="ph">연동 후</span></td><td class="mute">{{r.note}}</td></tr></template></tbody>
+          </table></div>
+        </div>
+      </div>
+    </template>
+
+    <template data-if="isAds">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+          <template data-for="adKpi" data-as="k">
+            <div class="card"><div class="lab">{{k.l}}</div><div class="big">{{k.v}}</div><div class="sub">{{k.s}}</div></div>
+          </template>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px">
+          <div class="card">
+            <p class="h2">시간대별 주문 · 10/4 (토)</p>
+            <p class="h2s">0–11시 47건 · 12–20시 6건 · 21–23시 9건 → 광고 게재 · 결제 상태 확인 알림 대상</p>
+            <div class="bars"><template data-for="hours" data-as="d"><div class="{{d.cls}}" style="height: {{d.h}}" title="{{d.tip}}"></div></template></div>
+            <div class="xl"><template data-for="hours" data-as="d"><span>{{d.x}}</span></template></div>
+          </div>
+          <div class="card">
+            <p class="h2">상품별 판매 수량 · 10/3 – 10/5</p>
+            <p class="h2s">상위 10개 · 카페24 주문 품목 기준</p>
+            <template data-for="rank" data-as="r">
+              <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) 48px; align-items: center; gap: 10px; padding: 5px 0; font-size: 12px">
+                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{r.n}}</span>
+                <div class="hbt"><div class="hb" style="width: {{r.w}}"></div></div>
+                <span class="num b">{{r.q}}</span>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div>
+          <p class="h2">광고 성과 · 광고 단위</p>
+          <p class="h2s">메타 광고 관리자 최근 7일 · 10/5 17:10 수집 · 웹사이트 구매 기준</p>
+          <div class="tbox"><table>
+            <thead><tr><th>광고</th><th>랜딩</th><th class="num">지출</th><th class="num">구매 · 클릭</th><th class="num">구매당 비용 · CPC</th><th class="num">ROAS</th><th>판단</th></tr></thead>
+            <tbody><template data-for="ads" data-as="r"><tr><td class="b">{{r.n}}</td><td><span class="tag">{{r.l}}</span></td><td class="num">{{r.s}}</td><td class="num">{{r.p}}</td><td class="num b">{{r.c}}</td><td class="num">{{r.r}}</td><td><span class="{{r.jc}}">{{r.j}}</span></td></tr></template></tbody>
+          </table></div>
+        </div>
+        <div>
+          <p class="h2">기간 비교 · 메타 전체</p>
+          <p class="h2s">지출이 늘어서가 아니라 배분이 바뀌어서 판 구간</p>
+          <div class="tbox"><table>
+            <thead><tr><th>구간</th><th class="num">지출 합계</th><th class="num">일 평균 지출</th><th class="num">구매</th><th class="num">일 평균 구매</th><th class="num">구매당 비용</th></tr></thead>
+            <tbody><template data-for="periods" data-as="r"><tr><td class="b">{{r.k}}</td><td class="num">{{r.a}}</td><td class="num">{{r.b}}</td><td class="num">{{r.c}}</td><td class="num">{{r.d}}</td><td class="num b">{{r.e}}</td></tr></template></tbody>
+          </table></div>
+        </div>
+      </div>
+    </template>
+
+    <template data-if="isPl">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px">
+          <div class="card">
+            <p class="h2">손익 흐름 · 10/4 자사몰</p>
+            <p class="h2s">매출에서 광고 전 공헌이익까지, 광고비는 메타 연동 후 자동 차감</p>
+            <template data-for="wf" data-as="w">
+              <div class="wf"><span style="flex: 0 0 120px">{{w.n}}</span><div style="flex: 1 1 auto; display: flex"><div style="height: 12px; border-radius: 3px; width: {{w.w}}; background: {{w.c}}"></div></div><span class="num" style="flex: 0 0 110px; font-weight: {{w.fw}}">{{w.v}}</span></div>
+            </template>
+            <div class="sub" style="margin-top: 10px">광고비가 ₩286,445를 넘으면 그날은 적자 — 이 숫자가 매일 광고 예산 상한으로 표시됩니다.</div>
+          </div>
+          <div class="card">
+            <p class="h2">손익 시뮬레이터</p>
+            <p class="h2s">하루 매출 · 정상가 비중 · 광고비를 바꾸면 이익이 바로 계산됩니다</p>
+            <div style="display: flex; flex-direction: column; gap: 14px">
+              <div><label for="sim-rev" style="display: flex; justify-content: space-between; font-size: 13px"><span>하루 매출</span><span class="b">{{simRevL}}</span></label><input id="sim-rev" class="range" type="range" min="100" max="500" step="10" value="{{simRev}}" data-on-change="{{setRev}}"></div>
+              <div><label for="sim-full" style="display: flex; justify-content: space-between; font-size: 13px"><span>정상가 매출 비중</span><span class="b">{{simFullL}}</span></label><input id="sim-full" class="range" type="range" min="0" max="100" step="5" value="{{simFull}}" data-on-change="{{setFull}}"></div>
+              <div><label for="sim-ad" style="display: flex; justify-content: space-between; font-size: 13px"><span>하루 광고비</span><span class="b">{{simAdL}}</span></label><input id="sim-ad" class="range" type="range" min="0" max="200" step="5" value="{{simAd}}" data-on-change="{{setAd}}"></div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #EDEDED">
+              <template data-for="simOut" data-as="o">
+                <div><div class="lab">{{o.l}}</div><div style="font-size: 18px; font-weight: 700; margin-top: 6px">{{o.v}}</div></div>
+              </template>
+            </div>
+            <div class="sub" style="margin-top: 12px">가정: 객단가 정상가 4.5만 · 시크릿 2.8만, 원가율 정상가 22%(추정) · 시크릿 57%(실측), PG 3.5%, 택배 3,500원, 고정비 제외.</div>
+          </div>
+        </div>
+        <div>
+          <p class="h2">시크릿 미끼 상품별 주문당 공헌이익 · 10/3 – 10/5</p>
+          <p class="h2s">밑줄 = 적자 · 상위 3개(EDP50 · 버디 · 디스커버리)가 미끼 판매의 69%</p>
+          <div class="tbox"><table>
+            <thead><tr><th>상품</th><th class="num">시크릿가</th><th class="num">원가</th><th class="num">마진율</th><th class="num">단독 구매(배송비 3천)</th><th class="num">본품과 함께(택배 공유)</th><th class="num">3일 판매</th><th>제안</th></tr></thead>
+            <tbody><template data-for="bait" data-as="r"><tr><td class="b">{{r.n}}</td><td class="num">{{r.p}}</td><td class="num">{{r.c}}</td><td class="num">{{r.m}}</td><td class="{{r.sc}}">{{r.s}}</td><td class="{{r.ac}}">{{r.a}}</td><td class="num">{{r.q}}</td><td><span class="{{r.tc}}">{{r.t}}</span></td></tr></template></tbody>
+          </table></div>
+        </div>
+      </div>
+    </template>
+
+    <template data-if="isCrm">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+          <template data-for="crmKpi" data-as="k">
+            <div class="card"><div class="lab">{{k.l}}</div><div class="big">{{k.v}}</div><div class="sub">{{k.s}}</div></div>
+          </template>
+        </div>
+        <div>
+          <p class="h2">자동 발송 시나리오</p>
+          <p class="h2s">광고비 없이 만드는 매출 — 마케팅 수신 동의 고객 대상</p>
+          <div class="tbox"><table>
+            <thead><tr><th>시점</th><th>대상</th><th>메시지</th><th>채널</th><th class="num">발송</th><th class="num">구매 전환</th></tr></thead>
+            <tbody><template data-for="flows" data-as="r"><tr><td class="b">{{r.t}}</td><td>{{r.a}}</td><td>{{r.m}}</td><td>{{r.c}}</td><td class="num"><span class="ph">측정 전</span></td><td class="num"><span class="ph">측정 전</span></td></tr></template></tbody>
+          </table></div>
+        </div>
+      </div>
+    </template>
+
+    <template data-if="isLtv">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+          <template data-for="ltvKpi" data-as="k">
+            <div class="card"><div class="lab">{{k.l}}</div><div class="big">{{k.v}}</div><div class="sub">{{k.s}}</div></div>
+          </template>
+        </div>
+        <div>
+          <p class="h2">고객 획득 비용(CAC) · 기간별</p>
+          <p class="h2s">메타 전체 지출 ÷ 자사몰 주문 = 주문당 광고비(블렌디드) · 신규 · 재구매 구분은 주문 엑셀 후</p>
+          <div class="tbox"><table>
+            <thead><tr><th>기간</th><th class="num">메타 지출</th><th class="num">자사몰 주문</th><th class="num">매출(결제)</th><th class="num">객단가</th><th class="num">주문당 광고비</th><th class="num">MER</th><th class="num">신규 고객 CAC</th></tr></thead>
+            <tbody><template data-for="cac" data-as="r"><tr><td class="b">{{r.k}}</td><td class="num">{{r.s}}</td><td class="num">{{r.o}}</td><td class="num">{{r.r}}</td><td class="num">{{r.a}}</td><td class="num b">{{r.c}}</td><td class="num">{{r.m}}</td><td class="num"><span class="ph">엑셀 후</span></td></tr></template></tbody>
+          </table></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px">
+          <div class="card">
+            <p class="h2">LTV 시뮬레이터 · 12개월 공헌이익 기준</p>
+            <p class="h2s">첫 구매 공헌이익은 실측, 재구매율은 아직 측정 전 — 슬라이더로 손익분기 재구매율을 확인</p>
+            <div style="display: flex; flex-direction: column; gap: 14px">
+              <div><label for="ltv-rep" style="display: flex; justify-content: space-between; font-size: 13px"><span>12개월 재구매율</span><span class="b">{{ltvRepL}}</span></label><input id="ltv-rep" class="range" type="range" min="0" max="60" step="1" value="{{ltvRep}}" data-on-change="{{setRep}}"></div>
+              <div><label for="ltv-n" style="display: flex; justify-content: space-between; font-size: 13px"><span>재구매 고객의 연간 추가 주문</span><span class="b">{{ltvNL}}</span></label><input id="ltv-n" class="range" type="range" min="10" max="40" step="1" value="{{ltvN}}" data-on-change="{{setN}}"></div>
+              <div><label for="ltv-cac" style="display: flex; justify-content: space-between; font-size: 13px"><span>신규 고객 CAC</span><span class="b">{{ltvCacL}}</span></label><input id="ltv-cac" class="range" type="range" min="5000" max="40000" step="500" value="{{ltvCac}}" data-on-change="{{setCac}}"></div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #EDEDED">
+              <template data-for="ltvOut" data-as="o">
+                <div><div class="lab">{{o.l}}</div><div style="font-size: 18px; font-weight: 700; margin-top: 6px">{{o.v}}</div></div>
+              </template>
+            </div>
+            <div class="sub" style="margin-top: 12px">가정: 첫 구매 공헌이익 ₩5,500(10/3–10/5 실측 주문당 3,277–7,750원의 중간값) · 재구매는 정상가 객단가 4.5만 · 원가율 22%(추정) · PG 3.5% · 택배 3,500원 → 주문당 ₩25,900. 신규 고객 CAC 기본값은 10월 주문당 광고비(재구매 주문 포함이라 실제 신규 CAC는 이보다 높음).</div>
+          </div>
+          <div class="card">
+            <p class="h2">크로스셀 · 주문 구성 (10/3 – 10/5 · 199건)</p>
+            <p class="h2s">미끼(시크릿 단품)만 산 주문에 본품이 얼마나 붙었는지</p>
+            <template data-for="basket" data-as="b">
+              <div style="display: grid; grid-template-columns: 170px minmax(0, 1fr) 90px; align-items: center; gap: 10px; padding: 7px 0; font-size: 13px">
+                <span>{{b.n}}</span>
+                <div class="hbt"><div class="hb" style="width: {{b.w}}"></div></div>
+                <span class="num b">{{b.v}}</span>
+              </div>
+            </template>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid #EDEDED">
+              <div><div class="lab">미끼 → 본품 동반 구매율</div><div style="font-size: 18px; font-weight: 700; margin-top: 6px">26%</div><div class="sub">미끼 포함 135건 중 35건</div></div>
+              <div><div class="lab">본품 동반 시 객단가</div><div style="font-size: 18px; font-weight: 700; margin-top: 6px"><span class="ph">엑셀 후</span></div><div class="sub">주문 단위 품목 엑셀에서 계산</div></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p class="h2">동반 구매 매트릭스 · 상품 A를 산 고객이 같이 산 상품 B</p>
+          <p class="h2s">주문 단위 품목 엑셀(주문번호 · 상품명 · 수량) 업로드 후 자동 계산 · 아래는 계산 항목 예시</p>
+          <div class="tbox"><table>
+            <thead><tr><th>기준 상품 A</th><th>동반 상품 B</th><th class="num">A 주문 수</th><th class="num">A+B 동반</th><th class="num">동반율</th><th class="num">리프트</th><th>제안</th></tr></thead>
+            <tbody><template data-for="xsell" data-as="r"><tr><td class="b">{{r.a}}</td><td>{{r.b}}</td><td class="num"><span class="ph">엑셀 후</span></td><td class="num"><span class="ph">엑셀 후</span></td><td class="num"><span class="ph">엑셀 후</span></td><td class="num"><span class="ph">엑셀 후</span></td><td class="mute">{{r.p}}</td></tr></template></tbody>
+          </table></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+          <template data-for="ltvSteps" data-as="s">
+            <div class="card"><div class="lab">{{s.k}}</div><div style="font-size: 16px; font-weight: 700; margin-top: 8px">{{s.t}}</div><div class="sub">{{s.d}}</div></div>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    <template data-if="isItems">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div>
+          <p class="h2">상품 마스터 · 채널별 가격 · 원가</p>
+          <p class="h2s">한 상품을 채널별 상품코드로 묶어 매출 · 재고 · 원가를 같은 기준으로 계산</p>
+          <div class="tbox"><table>
+            <thead><tr><th>상품</th><th>카페24</th><th>쿠팡</th><th class="num">정가</th><th class="num">시크릿가</th><th class="num">쿠팡가</th><th class="num">올영가</th><th class="num">원가</th><th class="num">정가 원가율</th><th class="num">시크릿 마진율</th></tr></thead>
+            <tbody><template data-for="items" data-as="r"><tr><td class="b">{{r.n}}</td><td>{{r.c24}}</td><td><span class="ph">연동 후</span></td><td class="num">{{r.p}}</td><td class="num">{{r.sp}}</td><td class="num"><span class="ph">연동 후</span></td><td class="num"><span class="ph">연동 후</span></td><td class="num">{{r.c}}</td><td class="num">{{r.r}}</td><td class="{{r.mc}}">{{r.m}}</td></tr></template></tbody>
+          </table></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px">
+          <div class="card">
+            <p class="h2">세트 구성(BOM) · 트래블 버디</p>
+            <p class="h2s">세트가 팔리면 구성품 재고가 자동 차감</p>
+            <template data-for="bom" data-as="b">
+              <div style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px"><span>{{b.n}}</span><span class="mute">수량 {{b.q}} · 원가 <span class="ph">원가표 연동</span></span></div>
+            </template>
+            <div style="display: flex; justify-content: space-between; padding: 12px 0 0; font-size: 14px"><span class="b">세트 원가</span><span class="b">₩6,252</span></div>
+          </div>
+          <div class="card">
+            <p class="h2">원가 변동 이력</p>
+            <p class="h2s">원가가 바뀌면 그날 이후 손익에만 반영</p>
+            <template data-for="costLog" data-as="c">
+              <div class="alert"><span class="dot lo"></span><div style="min-width: 0"><div style="font-size: 14px; font-weight: 500">{{c.t}}</div><div class="sub">{{c.d}}</div></div></div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template data-if="isStock">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+          <template data-for="stockKpi" data-as="k">
+            <div class="card"><div class="lab">{{k.l}}</div><div class="big">{{k.v}}</div><div class="sub">{{k.s}}</div></div>
+          </template>
+        </div>
+        <div>
+          <p class="h2">보관 위치별 재고 · 품절 예상</p>
+          <p class="h2s">재고 수량은 예시 · 판매 속도는 10/3–10/5 카페24 실판매(3일 평균)</p>
+          <div class="tbox"><table>
+            <thead><tr><th>상품</th><th class="num">자사 창고</th><th class="num">쿠팡 로켓</th><th class="num">올리브영</th><th class="num">안전재고</th><th class="num">판매 속도(일)</th><th class="num">품절 예상</th><th>상태</th></tr></thead>
+            <tbody><template data-for="stock" data-as="r"><tr><td class="b">{{r.n}}</td><td class="num">{{r.w}}</td><td class="num">{{r.r}}</td><td class="num"><span class="ph">연동 후</span></td><td class="num">{{r.ss}}</td><td class="num">{{r.v}}</td><td class="num b">{{r.d}}</td><td><span class="{{r.tc}}">{{r.t}}</span></td></tr></template></tbody>
+          </table></div>
+        </div>
+        <div>
+          <p class="h2">입출고 기록</p>
+          <p class="h2s">예시 · 주문 출고는 카페24 · 쿠팡 주문에서 자동 생성</p>
+          <div class="tbox"><table>
+            <thead><tr><th>일시</th><th>구분</th><th>상품</th><th class="num">수량</th><th>위치</th><th>근거</th></tr></thead>
+            <tbody><template data-for="moves" data-as="r"><tr><td>{{r.t}}</td><td><span class="tag">{{r.k}}</span></td><td class="b">{{r.n}}</td><td class="num">{{r.q}}</td><td>{{r.l}}</td><td class="mute">{{r.s}}</td></tr></template></tbody>
+          </table></div>
+        </div>
+      </div>
+    </template>
+
+    <template data-if="isPo">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div>
+          <p class="h2">발주 제안 · 자동</p>
+          <p class="h2s">향후 30일 예상 판매 − 현재 재고 + 안전재고 · 판매 속도 실측, 재고는 예시</p>
+          <div class="tbox"><table>
+            <thead><tr><th>상품</th><th class="num">30일 예상 판매</th><th class="num">현재 재고</th><th class="num">안전재고</th><th class="num">제안 수량</th><th>생산 리드타임</th><th>발주 권장일</th></tr></thead>
+            <tbody><template data-for="suggest" data-as="r"><tr><td class="b">{{r.n}}</td><td class="num">{{r.f}}</td><td class="num">{{r.s}}</td><td class="num">{{r.ss}}</td><td class="num b">{{r.q}}</td><td><span class="ph">입력</span></td><td><span class="{{r.tc}}">{{r.d}}</span></td></tr></template></tbody>
+          </table></div>
+        </div>
+        <div>
+          <p class="h2">발주 · 생산 현황</p>
+          <p class="h2s">예시</p>
+          <div class="tbox"><table>
+            <thead><tr><th>발주번호</th><th>품목</th><th class="num">수량</th><th>거래처</th><th>발주일</th><th>입고 예정</th><th>대금 조건</th><th>상태</th></tr></thead>
+            <tbody><template data-for="pos" data-as="r"><tr><td>{{r.id}}</td><td class="b">{{r.n}}</td><td class="num">{{r.q}}</td><td><span class="ph">{{r.v}}</span></td><td>{{r.od}}</td><td>{{r.d}}</td><td>{{r.pay}}</td><td><span class="{{r.tc}}">{{r.s}}</span></td></tr></template></tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <p class="h2">대금 지급 예정</p>
+          <p class="h2s">발주 조건에서 자동 생성 · 지급일 3일 전 알림</p>
+          <template data-for="payouts" data-as="p">
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 12px 0; border-bottom: 1px solid #F0F0F0; font-size: 14px"><span><span class="b">{{p.d}}</span> · {{p.n}}</span><span class="ph">{{p.a}}</span></div>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    <template data-if="isSettle">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px">
+          <template data-for="stKpi" data-as="k">
+            <div class="card"><div class="lab">{{k.l}}</div><div class="big">{{k.v}}</div><div class="sub">{{k.s}}</div></div>
+          </template>
+        </div>
+        <div>
+          <p class="h2">미입금 확인 · 9월 판매분</p>
+          <p class="h2s">관리표 정산금액(받을 돈) vs 법인계좌 입금(들어온 돈) · 입금 예정일을 넘기면 자동으로 "미입금" 표시 · 검은 숫자는 관리표 실측, 회색은 계좌 연동 후</p>
+          <div class="tbox"><table>
+            <thead><tr><th>거래처</th><th>구분</th><th class="num">9월 판매</th><th class="num">정산 예정액</th><th>정산 조건(관리표)</th><th>입금 예정</th><th class="num">입금 확인</th><th class="num">차이</th><th>상태</th></tr></thead>
+            <tbody><template data-for="stRows" data-as="r"><tr><td class="b">{{r.n}}</td><td><span class="tag">{{r.g}}</span></td><td class="num">{{r.s}}</td><td class="num b">{{r.e}}</td><td class="mute">{{r.c}}</td><td>{{r.d}}</td><td class="num"><span class="ph">계좌 연동 후</span></td><td class="num"><span class="ph">자동 계산</span></td><td><span class="{{r.tc}}">{{r.t}}</span></td></tr></template></tbody>
+          </table></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px">
+          <template data-for="stSrc" data-as="s">
+            <div class="card"><div class="lab">{{s.k}}</div><div style="font-size: 16px; font-weight: 700; margin-top: 8px">{{s.t}}</div><div class="sub">{{s.d}}</div></div>
+          </template>
+        </div>
+        <div class="card">
+          <p class="h2">대사 규칙</p>
+          <p class="h2s">입금 1건을 거래처 정산 1건에 자동으로 붙이는 순서</p>
+          <template data-for="stRules" data-as="a">
+            <div class="alert"><span class="{{a.dot}}"></span><div style="min-width: 0"><div style="font-size: 14px; font-weight: 500">{{a.t}}</div><div class="sub">{{a.d}}</div></div></div>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    <template data-if="isPromo">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div class="card">
+          <p class="h2">시크릿 링크 세일 결산 · 10/3 – 10/5 11:13</p>
+          <p class="h2s">카페24 주문 199건 · 원가표 기준</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px">
+            <template data-for="promoKpi" data-as="k">
+              <div><div class="lab">{{k.l}}</div><div class="big">{{k.v}}</div><div class="sub">{{k.s}}</div></div>
+            </template>
+          </div>
+        </div>
+        <div>
+          <p class="h2">배송비 정책 변경 효과 · 10/3 18:40 기준 전후</p>
+          <p class="h2s">시크릿 상품 15,000원 미만 주문에 배송비 3,000원 부과</p>
+          <div class="tbox"><table>
+            <thead><tr><th>지표</th><th class="num">변경 전 (무료배송)</th><th class="num">변경 후</th><th>해석</th></tr></thead>
+            <tbody><template data-for="shipFx" data-as="r"><tr><td class="b">{{r.k}}</td><td class="num">{{r.a}}</td><td class="num b">{{r.b}}</td><td class="mute">{{r.c}}</td></tr></template></tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <p class="h2">조치 필요</p>
+          <template data-for="promoTodo" data-as="a">
+            <div class="alert"><span class="dot"></span><div style="min-width: 0"><div style="font-size: 14px; font-weight: 500">{{a.t}}</div><div class="sub">{{a.d}}</div></div></div>
+          </template>
+        </div>
+        <div>
+          <p class="h2">예정 프로모션</p>
+          <div class="tbox"><table>
+            <thead><tr><th>기간</th><th>프로모션</th><th>채널</th><th>오퍼</th><th>목표</th><th>상태</th></tr></thead>
+            <tbody><template data-for="promos" data-as="r"><tr><td>{{r.d}}</td><td class="b">{{r.n}}</td><td>{{r.c}}</td><td>{{r.o}}</td><td><span class="ph">입력</span></td><td><span class="tag">{{r.s}}</span></td></tr></template></tbody>
+          </table></div>
+        </div>
+      </div>
+    </template>
+  </main>
+</div>
+</template>
+<script>
+(function(){
+class DCLogic{constructor(props){this.props=props||{};this.state={}}setState(p){Object.assign(this.state,p);render()}}
+const Component=(function(DCLogic){
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'home', rev: 300, full: 50, ad: 100, rep: 20, n: 15, cac: 8300 }; }
+  renderVals() {
+    const s = this.state;
+    const tab = s.tab || 'home';
+    const won = (n) => (n < 0 ? '−₩' : '₩') + Math.abs(Math.round(n)).toLocaleString('ko-KR');
+    const man = (n) => (n < 0 ? '−' : '') + (Math.abs(n) / 10000).toFixed(1).replace('.0', '') + '만';
+    const pct = (x) => Math.round(x * 100) + '%';
+    const exv = (pay, contribInclVat) => contribInclVat - pay / 11;
+    const mk = (key, label, cnt) => ({ label: label, cls: tab === key ? 'nav on' : 'nav', go: () => this.setState({ tab: key }), hasCnt: !!cnt, cnt: cnt || '' });
+    const meta = { title: {
+      home: ['대시보드', '경영 요약', '오늘 판단에 필요한 숫자와 알림'],
+      ads: ['대시보드', '매출 · 광고', '채널 · 상품 · 시간대 · 광고별 성과'],
+      pl: ['대시보드', '손익', '부가세 · 원가 · 수수료 · 택배비까지 뺀 실제 이익'],
+      crm: ['대시보드', '고객 · CRM', '재구매로 광고비 없는 매출 만들기'],
+      ltv: ['대시보드', '고객 분석 · LTV', 'CAC · 고객 생애가치 · 크로스셀 — 지금 있는 데이터와 엑셀 후 채워질 데이터'],
+      items: ['ERP', '상품 · 원가', '채널별 상품코드 · 가격 · 원가 · 세트 구성'],
+      stock: ['ERP', '재고', '보관 위치별 재고와 품절 예상'],
+      po: ['ERP', '발주 · 생산', '발주 제안 · 생산 현황 · 대금 지급 일정'],
+      settle: ['ERP', '정산 · 미입금 확인', '받을 돈(관리표 정산금액)과 들어온 돈(법인계좌 · PG)을 자동 대조'],
+      promo: ['ERP', '프로모션', '행사별 손익과 다음 행사 계획']
+    } };
+    const t = meta.title[tab];
+    // home
+    const c3a = exv(3420455, 848484), c4 = exv(1663219, 437647), c5 = exv(484487, 164450);
+    const metaSpend = [192397,181404,159775,164481,157870,176231,149670,133609,123126,118081,137158,187373,316772,179794,137113,116986,115324,131308,132764,164252,178058,174936,229830,351633,205973];
+    const metaPur = [4,1,7,4,1,7,6,6,6,6,9,6,3,1,2,3,23,17,32,31,31,26,26,57,23];
+    const metaDays = metaPur.map((p, i) => ({ h: Math.max(2, Math.round(p / 57 * 100)) + '%', cls: i >= 16 ? 'bar on' : 'bar', x: (i % 4 === 0) ? (i + 1) : '', tip: '9/' + (i + 1) + ' · 구매 ' + p + '건 · 지출 ' + won(metaSpend[i]) }));
+    const mixRaw = [['10/3 0–18시 · 무료배송', 46, 19, 21], ['10/3 18–24시 · 배송비 부과', 16, 8, 9], ['10/4', 33, 7, 25], ['10/5 오전', 5, 1, 9]];
+    const mix = mixRaw.map((m) => { const tot = m[1] + m[2] + m[3]; return { p: m[0], n: tot + '건 · 미끼만 ' + pct(m[1] / tot), w1: pct(m[1] / tot), w2: pct(m[2] / tot), w3: pct(m[3] / tot) }; });
+    // ads
+    const hourRaw = [1,5,3,2,1,2,2,7,6,11,7,3,0,2,0,0,1,3,0,0,0,3,3,3];
+    const hours = hourRaw.map((v, i) => ({ h: Math.max(2, Math.round(v / 11 * 100)) + '%', cls: (i >= 12 && i <= 20) ? 'bar' : 'bar on', x: (i % 3 === 0) ? i : '', tip: i + '시 · ' + v + '건' }));
+    const rankRaw = [['EDP50 모닝소일', 141], ['트래블 버디', 73], ['타블렛 + 2mL 세트', 56], ['디스커버리 세트', 34], ['트래블세트', 25], ['버닝 잇 올 핸드크림', 20], ['슬로우 나이트 린넨 세트', 13], ['히노끼 레더 핸드크림 (선물 포장)', 11], ['플로럴 머스크 디퓨저 리필', 10], ['버닝 잇 올 디퓨저', 10]];
+    const rank = rankRaw.map((r) => ({ n: r[0], q: r[1], w: pct(r[1] / 141) }));
+    // pl
+    const wfRaw = [['매출(실결제)', 1663219, '#111111', 700], ['부가세', -151202, '#BDBDBD', 400], ['원가', -939859, '#BDBDBD', 400], ['PG 수수료 3.5%', -58213, '#BDBDBD', 400], ['택배 · 포장', -227500, '#BDBDBD', 400], ['공헌이익 · 광고 전', 286445, '#111111', 700]];
+    const wf = wfRaw.map((w) => ({ n: w[0], v: won(w[1]), w: Math.max(1, Math.round(Math.abs(w[1]) / 1663219 * 100)) + '%', c: w[2], fw: w[3] })).concat([{ n: '광고비', v: '연동 후', w: '0%', c: '#FFFFFF', fw: 400 }]);
+    const rev = (s.rev || 300) * 10000, full = (s.full ?? 50) / 100, ad = (s.ad ?? 100) * 10000;
+    const rf = rev * full, rs = rev - rf;
+    const orders = rf / 45000 + rs / 28000;
+    const cm = rev / 1.1 - (rf * 0.22 + rs * 0.57) - 0.035 * rev - 3500 * orders;
+    const profit = cm - ad;
+    const simOut = [
+      { l: '하루 주문', v: Math.round(orders) + '건' },
+      { l: '광고 전 공헌이익', v: man(cm) },
+      { l: '광고 후 이익', v: man(profit) },
+      { l: 'MER', v: ad > 0 ? (rev / ad).toFixed(2) : '—' },
+      { l: '손익분기 MER', v: cm > 0 ? (rev / cm).toFixed(2) : '—' },
+      { l: '월 환산 (×30)', v: man(profit * 30) }
+    ];
+    const pf = (p, c) => [(p + 3000) / 1.1 - c - 0.035 * (p + 3000) - 3500, p / 1.1 - c - 0.035 * p];
+    const baitRaw = [['EDP50 모닝소일', 9000, 7381, 141, '세트가로만'], ['트래블 버디', 7000, 6252, 73, '증정 전환'], ['디스커버리 세트', 9900, 8576, 34, '세트가로만'], ['타블렛 + 2mL 세트', 6000, 3500, 56, '유지'], ['트래블세트', 5600, 2000, 25, '미끼 전면'], ['버닝 잇 올 핸드크림', 7500, 2046, 20, '미끼 전면'], ['슬로우 나이트 린넨 세트', 9000, 3965, 13, '미끼 전면']];
+    const bait = baitRaw.map((r) => { const v = pf(r[1], r[2]); const bad = v[0] < 0; return { n: r[0], p: won(r[1]), c: won(r[2]), m: pct((r[1] / 1.1 - r[2]) / (r[1] / 1.1)), s: won(v[0]), sc: bad ? 'num neg' : 'num', a: won(v[1]), ac: v[1] < 0 ? 'num neg' : 'num', q: r[3] + '개', t: r[4], tc: bad ? 'tag dark' : 'tag' }; });
+    // items
+    const itemRaw = [['모닝소일 오 드 퍼퓸 50mL', '498', 45000, 9000, 7381], ['모닝소일&히노끼 트래블 버디', '414', 28000, 7000, 6252], ['디스커버리 오 드 퍼퓸 세트', '384', 33000, 9900, 8576], ['센티드 타블렛 + 2mL 세트', '496', 15000, 6000, 3500], ['트래블세트 (택1)', '495', 14000, 5600, 2000], ['버닝 잇 올 핸드크림', '453', 15000, 7500, 2046], ['버닝 잇 올 디퓨저', '452', 39500, 19750, 7922], ['테이크 미 홈 핸드워시', '442', 33000, 16500, 6227], ['도쿄 클라우드 오 드 퍼퓸', '—', 43000, 21500, 5600]];
+    const items = itemRaw.map((r) => { const m = (r[3] / 1.1 - r[4]) / (r[3] / 1.1); return { n: r[0], c24: r[1], p: won(r[2]), sp: won(r[3]), c: won(r[4]), r: pct(r[4] / (r[2] / 1.1)), m: pct(m), mc: m < 0.2 ? 'num neg' : 'num b' }; });
+    // stock
+    const stockRaw = [['EDP50 모닝소일', 220, 0, 141, 150], ['트래블 버디', 300, 0, 73, 80], ['타블렛 + 2mL 세트', 400, 0, 56, 60], ['디스커버리 세트', 150, 0, 34, 40], ['버닝 잇 올 핸드크림', 600, 0, 20, 30]];
+    const stock = stockRaw.map((r) => { const v = r[3] / 3; const d = (r[1] + r[2]) / v; const urgent = d < 7, soon = d < 14; return { n: r[0], w: r[1].toLocaleString('ko-KR'), r: r[2], ss: r[4], v: v.toFixed(1) + '개', d: '약 ' + Math.floor(d) + '일', t: urgent ? '발주 필요' : soon ? '주의' : '여유', tc: urgent ? 'tag dark' : 'tag' }; });
+    const suggest = stockRaw.slice(0, 3).map((r) => { const v = r[3] / 3; const f = Math.round(v * 30); const q = Math.max(0, Math.ceil((f - r[1] + r[4]) / 100) * 100); const d = (r[1] + r[2]) / v; return { n: r[0], f: f.toLocaleString('ko-KR') + '개', s: r[1] + '개', ss: r[4] + '개', q: q.toLocaleString('ko-KR') + '개', d: d < 7 ? '즉시' : '리드타임 입력 후 계산', tc: d < 7 ? 'tag dark' : 'tag' }; });
+    // ltv
+    const cacRaw = [['9/1–9/18 상시 운영', 3006000, 339, null, '9월 매출은 MD 보고 기준 · 기간 매출 미분리'], ['9/19–9/30 시크릿 도입', 3565960, 593, null, ''], ['9월 전체', 6572000, 932, 37382474, ''], ['10/1–10/7 시크릿 + 올영 랜딩', 3303613, 398, 12664575, '올영 랜딩 지출 포함']];
+    const cac = cacRaw.map((r) => ({ k: r[0], s: won(r[1]), o: r[2] + '건', r: r[3] ? won(r[3]) : '—', a: r[3] ? won(r[3] / r[2]) : '—', c: won(r[1] / r[2]), m: r[3] ? (r[3] / r[1]).toFixed(2) : '—' }));
+    const rep = (s.rep ?? 20) / 100, nRep = (s.n ?? 15) / 10, cacV = s.cac ?? 8300;
+    const first = 5500, repCm = 45000 / 1.1 - 45000 * 0.22 - 45000 * 0.035 - 3500;
+    const ltv = first + rep * nRep * repCm;
+    const beRep = Math.max(0, cacV - first) / (nRep * repCm);
+    const ltvOut = [
+      { l: '첫 구매 공헌이익', v: won(first) },
+      { l: '12개월 LTV(공헌이익)', v: won(ltv) },
+      { l: 'LTV ÷ CAC', v: (ltv / cacV).toFixed(2) + '배' },
+      { l: '고객당 순기여', v: won(ltv - cacV) },
+      { l: '손익분기 재구매율', v: pct(beRep) },
+      { l: '목표 3배에 필요한 재구매율', v: pct(Math.max(0, 3 * cacV - first) / (nRep * repCm)) }
+    ];
+    const basket = [['미끼만', 100], ['미끼 + 시크릿 본품', 35], ['본품 · 일반 포함', 64]].map((b) => ({ n: b[0], v: b[1] + '건 · ' + pct(b[1] / 199), w: pct(b[1] / 100) }));
+    return {
+      navA: [mk('home', '경영 요약', '5'), mk('ads', '매출 · 광고'), mk('pl', '손익'), mk('crm', '고객 · CRM'), mk('ltv', '고객 분석 · LTV')],
+      navB: [mk('items', '상품 · 원가'), mk('stock', '재고', '1'), mk('po', '발주 · 생산'), mk('settle', '정산 · 미입금'), mk('promo', '프로모션', '3')],
+      crumb: t[0], title: t[1], desc: t[2],
+      isHome: tab === 'home', isAds: tab === 'ads', isPl: tab === 'pl', isCrm: tab === 'crm', isLtv: tab === 'ltv', isItems: tab === 'items', isStock: tab === 'stock', isPo: tab === 'po', isSettle: tab === 'settle', isPromo: tab === 'promo',
+      homeKpi: [
+        { l: '매출 · 자사몰', v: won(1663219), s: '주문 65건 · 객단가 ₩25,588' },
+        { l: '공헌이익 · 광고 전', v: won(c4), s: '매출 대비 ' + pct(c4 / 1663219) + ' · 부가세 제외' },
+        { l: '오늘 광고비 상한', v: won(c4), s: '이 금액을 넘게 쓰면 그날 적자' },
+        { l: '광고비 · 메타', v: '연동 후', s: '예산 시크릿 40만 + 바이럴 · 10/4 저녁 결제 중단' },
+        { l: '주문당 공헌이익', v: won(c4 / 65), s: '배송비 부과 전 10/3 ₩3,277' }
+      ],
+      metaDays: metaDays,
+      alerts: [
+        { dot: 'dot', t: 'EDP50 모닝소일 품절 예상 약 4일', d: '판매 속도 47개/일 · 재고 220개(예시) · 발주 제안 1,400개' },
+        { dot: 'dot', t: '10/4 12–20시 주문 급감', d: '0–11시 47건 → 12–20시 6건 · 광고 게재 · 카드 결제 상태 확인' },
+        { dot: 'dot', t: '미끼 단독 구매 적자 상품 3개', d: 'EDP50 · 버디 · 디스커버리 — 미끼 판매의 69%' },
+        { dot: 'dot', t: '배송비 과다청구 환불 26건 대기', d: '총 ₩138,000 · 10/5 12:00 설정 수정 완료' },
+        { dot: 'dot lo', t: '원가표 미등록 상품 2개', d: '기획세트 원가는 추정치 · MD 확인 필요(예시)' }
+      ],
+      channels: [
+        { n: '자사몰 (카페24)', v: won(1663219), cls: 'b' },
+        { n: '쿠팡 (로켓 · 판매자)', v: '연동 후', cls: 'ph' },
+        { n: '올리브영', v: '정산서 업로드 후', cls: 'ph' },
+        { n: '카카오 선물하기', v: '11월 오픈', cls: 'ph' },
+        { n: '쿠팡 파트너스 (바이럴 유입)', v: '연동 후', cls: 'ph' }
+      ],
+      mix: mix,
+      days: [
+        { d: '10/3 (금)', o: '119건', s: won(3420455), a: won(28743), c: won(c3a), p: won(c3a / 119), note: '18:40 배송비 부과 시작' },
+        { d: '10/4 (토)', o: '65건', s: won(1663219), a: won(25588), c: won(c4), p: won(c4 / 65), note: '12–20시 주문 급감' },
+        { d: '10/5 (일) 11:13까지', o: '15건', s: won(484487), a: won(32299), c: won(c5), p: won(c5 / 15), note: '12:00 배송비 오류 수정' }
+      ],
+      adKpi: [
+        { l: '메타 지출 · 바이럴', v: won(865773), s: '광고 6개 · 최근 7일' },
+        { l: '메타 구매', v: '55건', s: '전환 캠페인 4개' },
+        { l: '구매당 비용 · 시크릿 랜딩', v: won(8069), s: '10/1–10/5 · 구매 35건' },
+        { l: '구매당 비용 · 기존 랜딩', v: won(39467), s: '10/1–10/5 · 구매 7건 · 4.9배' }
+      ],
+      hours: hours,
+      rank: rank,
+      ads: [
+        { n: '전소미 핸드크림 히노끼', l: '시크릿', s: won(159255), p: '17건', c: won(9368), r: '3.45', j: '유지', jc: 'tag dark' },
+        { n: '제니 핸드크림', l: '시크릿', s: won(168786), p: '14건', c: won(12056), r: '3.27', j: '유지 · 변주', jc: 'tag dark' },
+        { n: '슬로우 나이트 향수', l: '시크릿', s: won(127909), p: '9건', c: won(14212), r: '—', j: '10/5 OFF', jc: 'tag' },
+        { n: '전소미 핸드크림 히노끼', l: '기존 상세', s: won(353286), p: '15건', c: won(23552), r: '0.98', j: 'OFF', jc: 'tag' },
+        { n: '슬로우 나이트 올영 랜딩', l: '올리브영', s: won(36459), p: '클릭 1,006', c: 'CPC ₩36', r: '—', j: '올영 판매량 대조', jc: 'tag' },
+        { n: '슬로우 나이트 서강준', l: '올리브영', s: won(20078), p: '클릭 381', c: 'CPC ₩53', r: '—', j: '올영 판매량 대조', jc: 'tag' }
+      ],
+      periods: [
+        { k: '9/1–16 상시 운영', a: '263.2만', b: '16.4만', c: '72건', d: '4.5건', e: won(36553) },
+        { k: '9/17–25 시크릿 도입', a: '168.4만', b: '18.7만', c: '266건', d: '29.6건', e: won(6331) },
+        { k: '10/1–10/5 시크릿 캠페인', a: '28.2만', b: '5.6만', c: '35건', d: '7.0건', e: won(8069) }
+      ],
+      wf: wf,
+      simRev: s.rev || 300, simFull: s.full ?? 50, simAd: s.ad ?? 100,
+      simRevL: (s.rev || 300) + '만', simFullL: (s.full ?? 50) + '%', simAdL: (s.ad ?? 100) + '만',
+      setRev: (e) => this.setState({ rev: +e.target.value }), setFull: (e) => this.setState({ full: +e.target.value }), setAd: (e) => this.setState({ ad: +e.target.value }),
+      simOut: simOut,
+      bait: bait,
+      crmKpi: [
+        { l: '시크릿 구매 회원', v: '약 200명', s: '10/3–10/5 · 회원 전용 구매' },
+        { l: '마케팅 수신 동의율', v: '측정 전', s: '카페24 회원 통계 연동 후' },
+        { l: '30일 재구매율', v: '측정 전', s: '10월 구매 코호트부터 추적' },
+        { l: '광고 없는 매출 비중', v: '측정 전', s: '목표 20%' }
+      ],
+      flows: [
+        { t: '구매 7일 후', a: '디스커버리 · 2mL 구매자', m: '가장 마음에 든 향 본품 크레딧 9,900원', c: '알림톡' },
+        { t: '구매 30–45일 후', a: '핸드크림 구매자', m: '재구매 알림 + 같은 향 바디 제안', c: '알림톡 · 문자' },
+        { t: '구매 4–6개월 후', a: '향수 구매자', m: '재구매 알림 + 10mL 휴대용 제안', c: '알림톡' },
+        { t: '11/1', a: '전체 동의 회원', m: '헬로키티 기획세트 + 선물하기 안내', c: '카카오 채널' }
+      ],
+      ltvKpi: [
+        { l: '주문당 광고비 · 10월', v: won(8300), s: '10/1–10/7 메타 330만 ÷ 398건 · 9월 ₩7,052' },
+        { l: '객단가 · 10월', v: won(31820), s: '9월 ₩40,110 → 시크릿 세트로 하락' },
+        { l: '첫 구매 공헌이익', v: '₩3,277 – 7,750', s: '주문당 · 배송비 부과 전후 실측' },
+        { l: '첫 구매 LTV ÷ CAC', v: '0.4 – 0.9배', s: '1회 구매로는 광고비 회수 불가 → 재구매가 손익을 결정' },
+        { l: '12개월 재구매율', v: '측정 전', s: '주문 엑셀(2025.1–) 업로드 후 코호트 계산' }
+      ],
+      cac: cac,
+      ltvRep: s.rep ?? 20, ltvN: s.n ?? 15, ltvCac: s.cac ?? 8300,
+      ltvRepL: (s.rep ?? 20) + '%', ltvNL: ((s.n ?? 15) / 10).toFixed(1) + '회', ltvCacL: won(s.cac ?? 8300),
+      setRep: (e) => this.setState({ rep: +e.target.value }), setN: (e) => this.setState({ n: +e.target.value }), setCac: (e) => this.setState({ cac: +e.target.value }),
+      ltvOut: ltvOut,
+      basket: basket,
+      xsell: [
+        { a: 'EDP50 모닝소일 (시크릿)', b: '모닝소일 바디 · 핸드 라인', p: '같은 향 본품 번들 · 구매 7일 후 알림톡' },
+        { a: '디스커버리 세트', b: '본품 EDP 30mL', p: '가장 많이 이어진 향을 크레딧 오퍼로' },
+        { a: '핸드크림', b: '같은 향 핸드워시 · 바디로션', p: '장바구니 추천 · 30일 후 재구매 알림' },
+        { a: '트래블 버디', b: '본품 바디 라인', p: '증정 전환 후 본품 전환율 추적' }
+      ],
+      ltvSteps: [
+        { k: '지금 바로', t: '주문당 광고비 · 객단가 · 주문 구성', d: '메타 지출과 카페24 일별 주문으로 계산 중 — 이 화면의 검은 숫자' },
+        { k: '주문 엑셀 업로드 후 (1일)', t: '신규 · 재구매 구분 · LTV 코호트 · 동반 구매', d: '카페24 주문 조회 엑셀(주문번호 · 주문일 · 회원ID · 상품 · 금액, 2025.1–)을 받으면 회원ID를 익명 처리해 계산 · 회색 칸이 채워짐' },
+        { k: '카페24 API 연동 후', t: '매일 자동 갱신 · 세그먼트 발송', d: '회원별 LTV · 마지막 구매일 · 이탈 위험이 매일 계산되고 CRM 자동 발송 대상이 자동 추출' }
+      ],
+      items: items,
+      bom: [
+        { n: '모닝소일 바디로션 40mL', q: '1' },
+        { n: '모닝소일 바디클렌저 40mL', q: '1' },
+        { n: '히노끼 레더 바디로션 40mL', q: '1' },
+        { n: '히노끼 레더 바디클렌저 40mL', q: '1' },
+        { n: '트래블 버디 박스', q: '1' }
+      ],
+      costLog: [
+        { t: '기획세트 원가 추정 → 확정 대기', d: '원가표에 없는 기획세트는 추정 원가로 계산 중(예시)' },
+        { t: '선물 포장 비용 2,000원 반영', d: '[선물 포장] 상품 주문 시 원가에 자동 가산' },
+        { t: '원가 변경은 적용일 이후 손익에만 반영', d: '과거 손익은 당시 원가 기준으로 유지' }
+      ],
+      stockKpi: [
+        { l: '발주 필요', v: '1개 상품', s: 'EDP50 모닝소일' },
+        { l: '주의', v: '2개 상품', s: '트래블 버디 · 디스커버리' },
+        { l: '쿠팡 로켓 입고 대기', v: '연동 후', s: '로켓 전환 진행 중' },
+        { l: '장기 재고 (90일+)', v: '측정 전', s: '입출고 기록 3개월 후' }
+      ],
+      stock: stock,
+      moves: [
+        { t: '10/5 11:12', k: '출고', n: '트래블 버디', q: '−1', l: '자사 창고', s: '카페24 주문 자동' },
+        { t: '10/5 10:59', k: '출고', n: 'EDP50 모닝소일', q: '−2', l: '자사 창고', s: '카페24 주문 자동' },
+        { t: '10/4 15:00', k: '이동', n: '버닝 잇 올 핸드크림', q: '−200', l: '자사 창고 → 쿠팡 로켓', s: '로켓 입고 요청' },
+        { t: '10/2 10:00', k: '입고', n: '타블렛 + 2mL 세트', q: '+500', l: '자사 창고', s: '발주 입고' },
+        { t: '10/1 17:00', k: '반품', n: '트래블세트', q: '+1', l: '자사 창고', s: '고객 반품' }
+      ],
+      suggest: suggest,
+      pos: [
+        { id: 'PO-2610-01', n: 'EDP50 모닝소일', q: '1,000', v: '제조사', od: '10/8', d: '10/24', pay: '계약금 30% · 잔금 입고 후 30일', s: '생산 중', tc: 'tag dark' },
+        { id: 'PO-2610-02', n: '헬로키티 기획세트 부자재', q: '3,000', v: '부자재사', od: '10/6', d: '10/28', pay: '입고 후 일괄', s: '발주 확정', tc: 'tag' },
+        { id: 'PO-2611-01', n: '슬로우 나이트 10mL', q: '2,000', v: '제조사', od: '—', d: '11/20', pay: '견적 확인 중', s: '견적', tc: 'tag' }
+      ],
+      payouts: [
+        { d: '10/10', n: 'PO-2610-01 계약금 30%', a: '금액 입력' },
+        { d: '10/28', n: 'PO-2610-02 부자재 대금', a: '금액 입력' },
+        { d: '11/23', n: 'PO-2610-01 잔금 70%', a: '금액 입력' }
+      ],
+      stKpi: [
+        { l: '9월 정산 예정액', v: '8.33억', s: '관리표 정산금액 합계 · 판매 10.39억' },
+        { l: '거래처 수', v: '70곳', s: '관리표 기준 · 정산 조건: 익월 일괄 23 · 선입금 7 · 건별 5 · 익월 중순 3 · 미기재 8' },
+        { l: '입금 확인', v: '연동 후', s: '법인계좌 거래내역 자동 수집' },
+        { l: '미입금 · 과소입금', v: '연동 후', s: '예정일 +3일 지나면 알림' },
+        { l: '세금계산서 미발행', v: '연동 후', s: '홈택스 발행분과 대조' }
+      ],
+      stRows: [
+        { n: '올리브영', g: '발주 · 오프라인', s: won(288482077), e: won(244830704), c: '월 정산서 · 수수료 43%', d: '10월 말', t: '예정', tc: 'tag' },
+        { n: '마이커머스', g: '해외', s: won(200643325), e: won(200643325), c: '출고 전 입금', d: '출고 전', t: '선입금 확인', tc: 'tag' },
+        { n: '29CM', g: '온라인', s: won(48803113), e: won(42911703), c: '익월 정산 · 25%', d: '10/31', t: '예정', tc: 'tag' },
+        { n: '카카오선물하기', g: '온라인', s: won(53058990), e: won(40978464), c: '익월 정산 · 20%', d: '10/31', t: '예정', tc: 'tag' },
+        { n: '공식몰 (PG)', g: '자사몰', s: won(37382474), e: won(37382474), c: 'PG사 기준 · 카드 매입 D+2~5', d: '수시', t: 'PG 연동 후', tc: 'tag' },
+        { n: '롯데면세', g: '면세', s: won(64636600), e: won(27479009), c: '정산 익월 중순 in / 수수료 익월 말 out', d: '10/15', t: '예정', tc: 'tag' },
+        { n: '군마트', g: '오프라인', s: won(47789840), e: won(24945202), c: '정산 익월 중순 in / 수수료 익월 말 out', d: '10/15', t: '예정', tc: 'tag' },
+        { n: '쿠팡', g: '온라인', s: won(31007420), e: won(20880413), c: '익월 정산 · 윙 정산 API', d: '주 단위', t: 'API 연동 후', tc: 'tag' },
+        { n: '신세계면세', g: '면세', s: won(40763800), e: won(18947005), c: '수수료 제외 입금 · 54.5%', d: '10월 중', t: '예정', tc: 'tag' },
+        { n: '공구', g: '특판', s: won(26202850), e: won(16105710), c: '건별 정산', d: '건별', t: '건별 확인', tc: 'tag' },
+        { n: '브랜드관', g: '온라인', s: won(16829260), e: won(15547094), c: '익월 정산', d: '10/31', t: '예정', tc: 'tag' },
+        { n: '신라면세', g: '면세', s: won(20192200), e: won(7831670), c: '익월 중순 수수료 제외 입금', d: '10/15', t: '예정', tc: 'tag' },
+        { n: '지우아이앤씨 (현대몰)', g: '온라인', s: won(14645500), e: won(7050294), c: '익월 정산', d: '10/31', t: '예정', tc: 'tag' },
+        { n: '그 외 57곳', g: '온·오프·해외', s: won(148135646), e: won(126985890), c: '익월 정산 · 건별 · 월말 입금 혼재', d: '—', t: '예정', tc: 'tag' }
+      ],
+      stSrc: [
+        { k: '① 법인계좌 입금', t: '은행 거래내역 자동 수집 · 매시간', d: '기업 인터넷뱅킹 조회 전용 연결(공동인증서 등록, 이체 권한 없음) 또는 은행 기업 API. 입금자명 · 금액 · 일시가 들어오면 거래처 정산 건과 자동 매칭' },
+        { k: '② PG · 카드사', t: '자사몰 PG 정산 · 카드 매입', d: '카페24 결제 PG사의 정산 내역(매입 D+2~5, 수수료)과 오프라인 매장 카드매출(여신금융협회)을 가져와 "판매 → 매입 → 입금" 3단계로 확인' },
+        { k: '③ 홈택스 세금계산서', t: '발행 · 수취 세금계산서 대조', d: '면세 · 군납 · 대량주문처럼 세금계산서 기준 정산 채널은 발행 여부 · 금액을 홈택스에서 가져와 미발행 · 금액 불일치 표시' },
+        { k: '④ 채널 정산서', t: '올리브영 · 쿠팡 · 29CM 정산서', d: 'API가 있는 채널은 자동, 없는 채널은 월 정산서 업로드 → 관리표 정산금액 자리를 시스템이 채움' }
+      ],
+      stRules: [
+        { dot: 'dot', t: '1 · 입금자명 → 거래처', d: '"(주)에이치디씨신라면세점" 같은 입금자명을 거래처 사전에 한 번 등록하면 이후 자동 연결 · 처음 보는 입금자는 "미분류"로 띄워 담당자가 지정' },
+        { dot: 'dot', t: '2 · 금액 · 예정일 일치', d: '정산 예정액 ±1% 안이면 "입금 완료" · 작으면 "과소입금(차이 표시)" · 예정일 +3일 지나도 없으면 "미입금"' },
+        { dot: 'dot', t: '3 · 여러 건 합산 입금', d: '해외 벤더 "개별 건 합쳐서 월말 입금"처럼 여러 정산이 한 번에 들어오면 합계 일치로 묶어서 처리' },
+        { dot: 'dot lo', t: '4 · 알림', d: '미입금 · 과소입금 · 미분류 입금은 매일 09시 카톡 요약 · 회계 담당자가 입금 확인 체크를 따로 하지 않아도 됨' }
+      ],
+      promoKpi: [
+        { l: '주문', v: '199건', s: '10/3 00:00 – 10/5 11:13' },
+        { l: '매출(실결제)', v: won(5568161), s: '배송비 포함' },
+        { l: '공헌이익 · 광고 전', v: won(exv(5568161, 1450581)), s: '매출 대비 ' + pct(exv(5568161, 1450581) / 5568161) + ' · 부가세 제외' },
+        { l: '시크릿 원가율', v: '57%', s: '정상가 원가율 22%(추정)' },
+        { l: '가장 많이 팔린 상품', v: 'EDP50', s: '141개 · 마진율 10%' }
+      ],
+      shipFx: [
+        { k: '주문당 공헌이익', a: won(3277), b: won(7750), c: '부가세 제외 · 10/3 같은 날 비교' },
+        { k: '객단가', a: won(25210), b: won(37951), c: '여러 개 담는 주문 증가' },
+        { k: '미끼 단독 무료배송 주문', a: '26건', b: '0건', c: '건당 약 −₩1,000 손실 구간 소멸' }
+      ],
+      promoTodo: [
+        { t: '배송비 과다청구 26건 환불', d: '총 ₩138,000 · 주문번호 목록 준비 완료' },
+        { t: '미끼 재설계', d: '핸드크림 · 트래블 · 린넨 · 타블렛을 전면에, EDP50 · 디스커버리는 세트가로, 버디는 증정' },
+        { t: '무료배송 기준 25,000원 테스트', d: '1주 · 같은 소재 · 같은 예산으로 비교' }
+      ],
+      promos: [
+        { d: '11/1 –', n: '헬로키티 기획세트 + 카카오 선물하기', c: '자사몰 · 선물하기 · 전 유통', o: '기획세트 · 선물포장', s: '기획' },
+        { d: '11/11', n: '빼빼로데이 선물 세트', c: '자사몰 · 선물하기', o: '세트 + 증정', s: '기획' },
+        { d: '11월 말', n: '블랙프라이데이', c: '전 채널', o: '얹어주기(증정)', s: '기획' },
+        { d: '12월', n: '크리스마스 · 연말 선물', c: '전 채널', o: '선물 세트 · 메시지 카드', s: '기획' }
+      ]
+    };
+  }
+}
+
+return Component;})(DCLogic);
+const inst=new Component({});
+const get=(scope,path)=>path.split('.').reduce((o,k)=>o==null?undefined:o[k],scope);
+const fill=(str,scope)=>str.replace(/\{\{\s*([\w.]+)\s*\}\}/g,(m,p)=>{const v=get(scope,p);return v==null?'':String(v)});
+function proc(node,scope){
+  for(const ch of Array.from(node.childNodes)){
+    if(ch.nodeType===3){if(ch.nodeValue.includes('{{'))ch.nodeValue=fill(ch.nodeValue,scope);continue}
+    if(ch.nodeType!==1)continue;
+    if(ch.tagName==='TEMPLATE'&&(ch.dataset.for||ch.dataset.if)){
+      const frag=document.createDocumentFragment();
+      if(ch.dataset.if){ if(get(scope,ch.dataset.if)){const c=ch.content.cloneNode(true);proc(c,scope);frag.appendChild(c)} }
+      else{ const list=get(scope,ch.dataset.for)||[];const as=ch.dataset.as;
+        for(const it of list){const c=ch.content.cloneNode(true);proc(c,Object.assign(Object.create(scope),{[as]:it}));frag.appendChild(c)} }
+      ch.replaceWith(frag);continue}
+    let val=null;
+    for(const a of Array.from(ch.attributes)){
+      if(a.name.startsWith('hint-')){ch.removeAttribute(a.name);continue}
+      if(a.name==='data-on-click'||a.name==='data-on-change'){
+        const m=a.value.match(/\{\{\s*([\w.]+)\s*\}\}/);const fn=m&&get(scope,m[1]);
+        if(typeof fn==='function')ch.addEventListener(a.name==='data-on-click'?'click':'change',fn);
+        ch.removeAttribute(a.name);continue}
+      if(a.value.includes('{{')){const v=fill(a.value,scope);if(a.name==='value')val=v;ch.setAttribute(a.name,v)}
+    }
+    proc(ch,scope);
+    if(val!=null&&'value' in ch)ch.value=val;
+  }
+}
+const tpl=document.getElementById('tpl');const app=document.getElementById('app');
+function render(){
+  const sx=window.scrollX,sy=window.scrollY;
+  const f=tpl.content.cloneNode(true);proc(f,inst.renderVals());
+  app.replaceChildren(f);window.scrollTo(sx,sy);
+}
+render();
+})();
+</script>
+
+</body>
+</html>
